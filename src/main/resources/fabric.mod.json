@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "daycounterenhanced",
+  "version": "${version}",
+  "name": "Day Counter Enhanced",
+  "description": "Unique PvP game",
+  "authors": [],
+  "contact": {},
+  "license": "AGPL-3.0",
+  "icon": "assets/daycounterenhanced/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "world.anhgelus.architectsland.daycounterenhanced.client.DayCounterEnhancedClient"
+    ],
+    "main": [
+      "world.anhgelus.architectsland.daycounterenhanced.DayCounterEnhanced"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
