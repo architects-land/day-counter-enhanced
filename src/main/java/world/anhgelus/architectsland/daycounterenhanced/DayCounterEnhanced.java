@@ -1,10 +1,16 @@
 package world.anhgelus.architectsland.daycounterenhanced;
 
 import net.fabricmc.api.ModInitializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DayCounterEnhanced implements ModInitializer {
 
+    public static final String MOD_ID = "daycounterenhanced";
+    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+
     @Override
     public void onInitialize() {
+        LOGGER.info("Day Counter Enhanced initialized");
     }
 }
