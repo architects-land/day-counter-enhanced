@@ -5,10 +5,8 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
-import world.anhgelus.architectsland.daycounterenhanced.DayCounterEnhanced;
 
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class DayCounterEnhancedClient implements ClientModInitializer {
     private long connectedAt = -1;
