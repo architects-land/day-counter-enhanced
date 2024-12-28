@@ -36,7 +36,10 @@ public class ClientStorage {
             return;
         }
         while (scanner.hasNextLine()) {
-            final var splitted = scanner.nextLine().split("=");
+            final var nl = scanner.nextLine();
+            if (nl.equals("\n") || nl.isEmpty()) continue;
+            final var splitted = nl.split("=");
+            if (splitted.length != 2) continue;
             map.put(splitted[0].trim(), Long.parseLong(splitted[1].trim()));
         }
     }
@@ -45,7 +48,7 @@ public class ClientStorage {
         if (map == null) return;
         try (final var writer = new FileWriter(path().toString())) {
             for (var k : map.keySet()) {
-                writer.write(k+"="+map.get(k));
+                writer.write(k+"="+map.get(k)+"\n");
             }
         }
     }
