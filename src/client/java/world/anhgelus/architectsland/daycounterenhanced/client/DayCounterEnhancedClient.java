@@ -44,7 +44,7 @@ public class DayCounterEnhancedClient implements ClientModInitializer {
                         assert serverPlayer != null;
                         // get and show time
                         final var time = serverPlayer.getStatHandler().getStat(Stats.CUSTOM.getOrCreateStat(Stats.PLAY_TIME));
-                        draw(client, context, Math.floorDiv(time,20000)+1);
+                        draw(client, context, Math.floorDiv(time,24000)+1);
                     }
             );
         });
