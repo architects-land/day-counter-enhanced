@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.stat.Stats;
 
 import java.io.IOException;
 
@@ -16,15 +17,23 @@ public class DayCounterEnhancedClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         HudRenderCallback.EVENT.register((drawContext, tickDelta) -> {
+            if (!MinecraftClient.isHudEnabled()) return;
             final var client = MinecraftClient.getInstance();
             final var player = client.player;
             final var world = client.world;
             if (world == null || player == null) return;
-            if (client.isIntegratedServerRunning()) {
-                drawContext.drawTextWithShadow(client.textRenderer, "Day " + (Math.floorDiv(world.getTime(),20000)+1), 5, 5, 0xFFFFFF);
+            if (!client.isIntegratedServerRunning()) {
+                drawContext.drawTextWithShadow(client.textRenderer, "Day " + (Math.floorDiv(timeConnected(),20*60*10)+1), 5, 5, 0xFFFFFF);
                 return;
             }
-            drawContext.drawTextWithShadow(client.textRenderer, "Day " + (Math.floorDiv(timeConnected(),20*60*10)+1), 5, 5, 0xFFFFFF);
+            // get server player entity
+            final var server = client.getServer();
+            if (server == null) return;
+            final var serverPlayer = server.getPlayerManager().getPlayer(player.getUuid());
+            assert serverPlayer != null;
+            // get and show time
+            final var time = serverPlayer.getStatHandler().getStat(Stats.CUSTOM.getOrCreateStat(Stats.PLAY_TIME));
+            drawContext.drawTextWithShadow(client.textRenderer, "Day " + (Math.floorDiv(time,20000)+1), 5, 5, 0xFFFFFF);
         });
 
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
@@ -53,6 +62,6 @@ public class DayCounterEnhancedClient implements ClientModInitializer {
     }
 
     private long timeConnected() {
-        return Math.floorDiv(System.currentTimeMillis() - connectedAt, 100) + lastTimeConnected;
+        return Math.floorDiv(System.currentTimeMillis() - connectedAt, 100) + lastTimeConnected; // counts each 0.1s
     }
 }
