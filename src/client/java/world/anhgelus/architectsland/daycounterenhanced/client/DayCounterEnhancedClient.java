@@ -19,6 +19,7 @@ public class DayCounterEnhancedClient implements ClientModInitializer {
         HudRenderCallback.EVENT.register((drawContext, tickDelta) -> {
             if (!MinecraftClient.isHudEnabled()) return;
             final var client = MinecraftClient.getInstance();
+            if (client.getDebugHud().shouldShowDebugHud()) return;
             final var player = client.player;
             final var world = client.world;
             if (world == null || player == null) return;
