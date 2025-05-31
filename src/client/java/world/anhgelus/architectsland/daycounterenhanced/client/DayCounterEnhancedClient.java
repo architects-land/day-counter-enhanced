@@ -9,6 +9,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Identifier;
+import world.anhgelus.architectsland.daycounterenhanced.Config;
 import world.anhgelus.architectsland.daycounterenhanced.DayCounterEnhanced;
 
 public class DayCounterEnhancedClient implements ClientModInitializer {
@@ -76,7 +77,16 @@ public class DayCounterEnhancedClient implements ClientModInitializer {
     }
 
     private void draw(MinecraftClient client, DrawContext context, long day) {
-        context.drawTextWithShadow(client.textRenderer, "Day " + day, 5, 5, 0xFFFFFF);
+        int x = 5, y = 5;
+        switch (Config.position) {
+            case TOP_RIGHT -> x = context.getScaledWindowWidth() - 5;
+            case BOTTOM_LEFT -> y = context.getScaledWindowHeight() - 5;
+            case BOTTOM_RIGHT -> {
+                x = context.getScaledWindowWidth() - 5;
+                y = context.getScaledWindowHeight() - 5;
+            }
+        }
+        context.drawTextWithShadow(client.textRenderer, "Day " + day, x, y, 0xFFFFFF);
     }
 
     private long timeConnected() {
