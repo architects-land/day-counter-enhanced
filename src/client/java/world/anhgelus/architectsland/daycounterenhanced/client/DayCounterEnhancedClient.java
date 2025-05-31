@@ -34,13 +34,12 @@ public class DayCounterEnhancedClient implements ClientModInitializer {
                         final var playTimeStat = Stats.CUSTOM.getOrCreateStat(Stats.PLAY_TIME);
                         if (!client.isIntegratedServerRunning()) {
                             if (!firstUpdateDone) {
-                                final var packet = new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.REQUEST_STATS);
                                 final var network = client.getNetworkHandler();
                                 if (network == null) {
                                     DayCounterEnhanced.LOGGER.warn("Network handler is null");
                                     return;
                                 }
-                                network.sendPacket(packet);
+                                network.sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.REQUEST_STATS));
                                 lastTimeConnected = player.getStatHandler().getStat(playTimeStat);
                                 firstUpdateDone = true;
                             }
