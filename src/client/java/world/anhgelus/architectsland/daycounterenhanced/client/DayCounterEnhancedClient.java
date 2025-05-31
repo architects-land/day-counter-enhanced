@@ -35,7 +35,7 @@ public class DayCounterEnhancedClient implements ClientModInitializer {
                         final var world = client.world;
                         if (world == null || player == null) return;
 
-                        long time = 0;
+                        final long time;
                         // server
                         if (!client.isIntegratedServerRunning()) {
                             if (!firstUpdateDone) {
@@ -78,12 +78,13 @@ public class DayCounterEnhancedClient implements ClientModInitializer {
 
     private void draw(MinecraftClient client, DrawContext context, long day) {
         int x = 5, y = 5;
+        int xDecal = 33 + (int) Math.floor(Math.log10(day))*5;
         switch (Config.position) {
-            case TOP_RIGHT -> x = context.getScaledWindowWidth() - 5;
-            case BOTTOM_LEFT -> y = context.getScaledWindowHeight() - 5;
+            case TOP_RIGHT -> x = context.getScaledWindowWidth() - xDecal;
+            case BOTTOM_LEFT -> y = context.getScaledWindowHeight() - 15;
             case BOTTOM_RIGHT -> {
-                x = context.getScaledWindowWidth() - 5;
-                y = context.getScaledWindowHeight() - 5;
+                x = context.getScaledWindowWidth() - xDecal;
+                y = context.getScaledWindowHeight() - 15;
             }
         }
         context.drawTextWithShadow(client.textRenderer, "Day " + day, x, y, 0xFFFFFF);
