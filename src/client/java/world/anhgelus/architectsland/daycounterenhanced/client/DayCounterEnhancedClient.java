@@ -1,7 +1,6 @@
 package world.anhgelus.architectsland.daycounterenhanced.client;
 
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
@@ -12,11 +11,8 @@ import net.minecraft.stat.Stats;
 import net.minecraft.util.Identifier;
 import world.anhgelus.architectsland.daycounterenhanced.DayCounterEnhanced;
 
-import java.io.IOException;
-
 public class DayCounterEnhancedClient implements ClientModInitializer {
     private long connectedAt = -1;
-    private String address = "";
     private long lastTimeConnected = 0;
     private boolean firstUpdateDone = false;
 
@@ -66,27 +62,17 @@ public class DayCounterEnhancedClient implements ClientModInitializer {
 
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
             if (client.isIntegratedServerRunning()) return;
-            address = handler.getConnection().getAddressAsString(true);
             connectedAt = System.currentTimeMillis();
-            lastTimeConnected = ClientStorage.get(address);
+            lastTimeConnected = 0;
             firstUpdateDone = false;
         });
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
             if (client.isIntegratedServerRunning()) return;
             if (connectedAt == -1) throw new IllegalStateException("Connected at was not set");
-            ClientStorage.set(address, timeConnected());
             // reset
-            address = "";
             connectedAt = -1;
             lastTimeConnected = 0;
-        });
-
-        ClientLifecycleEvents.CLIENT_STOPPING.register(client -> {
-            try {
-                ClientStorage.writeMap();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            firstUpdateDone = false;
         });
     }
 
@@ -95,6 +81,6 @@ public class DayCounterEnhancedClient implements ClientModInitializer {
     }
 
     private long timeConnected() {
-        return Math.floorDiv(System.currentTimeMillis() - connectedAt, 100) + lastTimeConnected; // counts each 0.1s
+        return Math.floorDiv(System.currentTimeMillis() - connectedAt, 50) + lastTimeConnected; // counts each tick
     }
 }
