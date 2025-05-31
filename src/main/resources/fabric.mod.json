@@ -4,10 +4,22 @@
   "version": "${version}",
   "name": "Day Counter Enhanced",
   "description": "Mod counting days in singleplayer and in multiplayer!",
-  "authors": [],
-  "contact": {},
+  "authors": [
+    {
+      "name": "Anhgelus Morhtuuzh (anhgelus)",
+      "contact": {
+        "email": "me@anhgelus.world",
+        "homepage": "https://www.anhgelus.world/"
+      }
+    }
+  ],
+  "contact": {
+    "homepage": "https://modrinth.com/mod/day-counter-enhanced",
+    "issues": "https://github.com/architects-land/day-counter-enhanced/issues",
+    "sources": "https://github.com/architects-land/day-counter-enhanced"
+  },
   "license": "AGPL-3.0",
-  "icon": "assets/daycounterenhanced/logo.jpg",
+  "icon": "assets/daycounterenhanced/logo.png",
   "environment": "client",
   "entrypoints": {
     "client": [
