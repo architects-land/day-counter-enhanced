@@ -1,0 +1,8 @@
+{
+  "daycounterenhanced.midnightconfig.title": "Config de Day Counter Enhanced",
+  "daycounterenhanced.midnightconfig.position": "Position",
+  "daycounterenhanced.midnightconfig.enum.Position.TOP_LEFT": "Haut gauche",
+  "daycounterenhanced.midnightconfig.enum.Position.TOP_RIGHT": "Haut droit",
+  "daycounterenhanced.midnightconfig.enum.Position.BOTTOM_LEFT": "Bas gauche",
+  "daycounterenhanced.midnightconfig.enum.Position.BOTTOM_RIGHT": "Bas droit"
+}
