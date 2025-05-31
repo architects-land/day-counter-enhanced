@@ -13,13 +13,15 @@ import world.anhgelus.architectsland.daycounterenhanced.DayCounterEnhanced;
 
 public class DayCounterEnhancedClient implements ClientModInitializer {
     private long connectedAt = -1;
-    private long lastTimeConnected = 0;
+    private long timeAlreadyPassed = 0;
     private boolean firstUpdateDone = false;
 
     public final Identifier HUD_ID = Identifier.of(DayCounterEnhanced.MOD_ID, "hud");;
 
     @Override
     public void onInitializeClient() {
+        final var playTimeStat = Stats.CUSTOM.getOrCreateStat(Stats.PLAY_TIME);
+
         HudLayerRegistrationCallback.EVENT.register((drawContext) -> {
             drawContext.attachLayerAfter(
                     IdentifiedLayer.OVERLAY_MESSAGE,
@@ -31,29 +33,26 @@ public class DayCounterEnhancedClient implements ClientModInitializer {
                         final var player = client.player;
                         final var world = client.world;
                         if (world == null || player == null) return;
-                        final var playTimeStat = Stats.CUSTOM.getOrCreateStat(Stats.PLAY_TIME);
+
+                        long time = 0;
+                        // server
                         if (!client.isIntegratedServerRunning()) {
                             if (!firstUpdateDone) {
-                                final var network = client.getNetworkHandler();
-                                if (network == null) {
-                                    DayCounterEnhanced.LOGGER.warn("Network handler is null");
-                                    return;
-                                }
-                                network.sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.REQUEST_STATS));
-                                lastTimeConnected = player.getStatHandler().getStat(playTimeStat);
+                                timeAlreadyPassed = client.player.getStatHandler().getStat(playTimeStat);
                                 firstUpdateDone = true;
                             }
-                            draw(client, context, Math.floorDiv(timeConnected(),20*60*20)+1);
-                            return;
+                            time = timeConnected();
+                        // client
+                        } else {
+                            // get server player entity
+                            final var server = client.getServer();
+                            if (server == null) return;
+                            final var serverPlayer = server.getPlayerManager().getPlayer(player.getUuid());
+                            assert serverPlayer != null;
+                            // get and show time
+                            serverPlayer.getStatHandler().updateStatSet();
+                            time = serverPlayer.getStatHandler().getStat(playTimeStat);
                         }
-                        // get server player entity
-                        final var server = client.getServer();
-                        if (server == null) return;
-                        final var serverPlayer = server.getPlayerManager().getPlayer(player.getUuid());
-                        assert serverPlayer != null;
-                        // get and show time
-                        final var time = serverPlayer.getStatHandler().getStat(Stats.CUSTOM.getOrCreateStat(Stats.PLAY_TIME));
-                        serverPlayer.getStatHandler().updateStatSet();
                         draw(client, context, Math.floorDiv(time,24000)+1);
                     }
             );
@@ -61,16 +60,17 @@ public class DayCounterEnhancedClient implements ClientModInitializer {
 
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
             if (client.isIntegratedServerRunning()) return;
+            timeAlreadyPassed = 0;
+            DayCounterEnhanced.LOGGER.info("Fetching time passed...");
+            handler.sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.REQUEST_STATS));
             connectedAt = System.currentTimeMillis();
-            lastTimeConnected = 0;
-            firstUpdateDone = false;
         });
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
             if (client.isIntegratedServerRunning()) return;
-            if (connectedAt == -1) throw new IllegalStateException("Connected at was not set");
+            if (connectedAt == -1) DayCounterEnhanced.LOGGER.warn("Connected at was not set");
             // reset
             connectedAt = -1;
-            lastTimeConnected = 0;
+            timeAlreadyPassed = 0;
             firstUpdateDone = false;
         });
     }
@@ -80,6 +80,6 @@ public class DayCounterEnhancedClient implements ClientModInitializer {
     }
 
     private long timeConnected() {
-        return Math.floorDiv(System.currentTimeMillis() - connectedAt, 50) + lastTimeConnected; // counts each tick
+        return Math.floorDiv(System.currentTimeMillis() - connectedAt, 50) + timeAlreadyPassed; // counts each tick
     }
 }
