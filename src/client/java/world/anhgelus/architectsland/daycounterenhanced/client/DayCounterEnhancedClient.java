@@ -2,8 +2,7 @@ package world.anhgelus.architectsland.daycounterenhanced.client;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
-import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
@@ -17,46 +16,40 @@ public class DayCounterEnhancedClient implements ClientModInitializer {
     private long timeAlreadyPassed = 0;
     private boolean firstUpdateDone = false;
 
-    public final Identifier HUD_ID = Identifier.of(DayCounterEnhanced.MOD_ID, "hud");;
+    public final Identifier HUD_ID = Identifier.of(DayCounterEnhanced.MOD_ID, "hud");
 
     @Override
     public void onInitializeClient() {
         final var playTimeStat = Stats.CUSTOM.getOrCreateStat(Stats.PLAY_TIME);
 
-        HudLayerRegistrationCallback.EVENT.register((drawContext) -> {
-            drawContext.attachLayerAfter(
-                    IdentifiedLayer.OVERLAY_MESSAGE,
-                    HUD_ID,
-                    (context, tickCounter) -> {
-                        if (!MinecraftClient.isHudEnabled()) return;
-                        final var client = MinecraftClient.getInstance();
-                        if (client.inGameHud != null && client.getDebugHud().shouldShowDebugHud()) return;
-                        final var player = client.player;
-                        final var world = client.world;
-                        if (world == null || player == null) return;
+        HudElementRegistry.addFirst(HUD_ID, (context, tickCounter) -> {
+            if (!MinecraftClient.isHudEnabled()) return;
+            final var client = MinecraftClient.getInstance();
+            if (client.inGameHud != null && client.getDebugHud().shouldShowDebugHud()) return;
+            final var player = client.player;
+            final var world = client.world;
+            if (world == null || player == null) return;
 
-                        final long time;
-                        // server
-                        if (!client.isIntegratedServerRunning()) {
-                            if (!firstUpdateDone) {
-                                timeAlreadyPassed = client.player.getStatHandler().getStat(playTimeStat);
-                                firstUpdateDone = true;
-                            }
-                            time = timeConnected();
-                        // client
-                        } else {
-                            // get server player entity
-                            final var server = client.getServer();
-                            if (server == null) return;
-                            final var serverPlayer = server.getPlayerManager().getPlayer(player.getUuid());
-                            assert serverPlayer != null;
-                            // get and show time
-                            serverPlayer.getStatHandler().updateStatSet();
-                            time = serverPlayer.getStatHandler().getStat(playTimeStat);
-                        }
-                        draw(client, context, Math.floorDiv(time,24000)+1);
-                    }
-            );
+            final long time;
+            // server
+            if (!client.isIntegratedServerRunning()) {
+                if (!firstUpdateDone) {
+                    timeAlreadyPassed = client.player.getStatHandler().getStat(playTimeStat);
+                    firstUpdateDone = true;
+                }
+                time = timeConnected();
+                // client
+            } else {
+                // get server player entity
+                final var server = client.getServer();
+                if (server == null) return;
+                final var serverPlayer = server.getPlayerManager().getPlayer(player.getUuid());
+                assert serverPlayer != null;
+                // get and show time
+                serverPlayer.getStatHandler().updateStatSet();
+                time = serverPlayer.getStatHandler().getStat(playTimeStat);
+            }
+            draw(client, context, Math.floorDiv(time,24000)+1);
         });
 
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
