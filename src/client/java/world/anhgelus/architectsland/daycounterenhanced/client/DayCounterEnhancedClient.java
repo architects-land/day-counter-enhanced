@@ -4,9 +4,11 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
 import net.minecraft.stat.Stats;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import world.anhgelus.architectsland.daycounterenhanced.Config;
 import world.anhgelus.architectsland.daycounterenhanced.DayCounterEnhanced;
@@ -22,7 +24,7 @@ public class DayCounterEnhancedClient implements ClientModInitializer {
     public void onInitializeClient() {
         final var playTimeStat = Stats.CUSTOM.getOrCreateStat(Stats.PLAY_TIME);
 
-        HudElementRegistry.addFirst(HUD_ID, (context, tickCounter) -> {
+        HudElementRegistry.addLast(HUD_ID, (context, tickCounter) -> {
             if (!MinecraftClient.isHudEnabled()) return;
             final var client = MinecraftClient.getInstance();
             if (client.inGameHud != null && client.getDebugHud().shouldShowDebugHud()) return;
@@ -49,7 +51,7 @@ public class DayCounterEnhancedClient implements ClientModInitializer {
                 serverPlayer.getStatHandler().updateStatSet();
                 time = serverPlayer.getStatHandler().getStat(playTimeStat);
             }
-            draw(client, context, Math.floorDiv(time,24000)+1);
+            draw(client.textRenderer, context, Math.floorDiv(time,24000)+1);
         });
 
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
@@ -69,7 +71,7 @@ public class DayCounterEnhancedClient implements ClientModInitializer {
         });
     }
 
-    private void draw(MinecraftClient client, DrawContext context, long day) {
+    private void draw(TextRenderer textRenderer, DrawContext context, long day) {
         int x = 5, y = 5;
         int xDecal = 33 + (int) Math.floor(Math.log10(day))*5;
         switch (Config.position) {
@@ -80,7 +82,7 @@ public class DayCounterEnhancedClient implements ClientModInitializer {
                 y = context.getScaledWindowHeight() - 15;
             }
         }
-        context.drawTextWithShadow(client.textRenderer, "Day " + day, x, y, 0xFFFFFF);
+        context.drawTextWithShadow(textRenderer, "Day " + day, x, y, Colors.WHITE);
     }
 
     private long timeConnected() {
