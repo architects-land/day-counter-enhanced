@@ -25,7 +25,7 @@ public class DayCounterEnhancedClient implements ClientModInitializer {
         final var playTimeStat = Stats.CUSTOM.getOrCreateStat(Stats.PLAY_TIME);
 
         HudElementRegistry.addLast(HUD_ID, (context, tickCounter) -> {
-            if (!MinecraftClient.isHudEnabled()) return;
+            if (!MinecraftClient.isHudEnabled() || !Config.enabled) return;
             final var client = MinecraftClient.getInstance();
             if (client.inGameHud != null && client.getDebugHud().shouldShowDebugHud()) return;
             final var player = client.player;
@@ -51,7 +51,7 @@ public class DayCounterEnhancedClient implements ClientModInitializer {
                 serverPlayer.getStatHandler().updateStatSet();
                 time = serverPlayer.getStatHandler().getStat(playTimeStat);
             }
-            draw(client.textRenderer, context, Math.floorDiv(time,24000)+1);
+            draw(client.textRenderer, context, Math.floorDiv(time,2400)+1);
         });
 
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {

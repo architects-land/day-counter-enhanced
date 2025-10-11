@@ -4,5 +4,6 @@
   "daycounterenhanced.midnightconfig.enum.Position.TOP_LEFT": "Haut gauche",
   "daycounterenhanced.midnightconfig.enum.Position.TOP_RIGHT": "Haut droit",
   "daycounterenhanced.midnightconfig.enum.Position.BOTTOM_LEFT": "Bas gauche",
-  "daycounterenhanced.midnightconfig.enum.Position.BOTTOM_RIGHT": "Bas droit"
+  "daycounterenhanced.midnightconfig.enum.Position.BOTTOM_RIGHT": "Bas droit",
+  "daycounterenhanced.midnightconfig.enabled": "Activer"
 }

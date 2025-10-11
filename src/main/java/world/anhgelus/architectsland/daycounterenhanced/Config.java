@@ -7,5 +7,6 @@ public class Config extends MidnightConfig {
         TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT
     }
 
+    @Entry public static boolean enabled = true;
     @Entry public static Position position = Position.TOP_LEFT;
 }
