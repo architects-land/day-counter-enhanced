@@ -8,5 +8,6 @@ public class Config extends MidnightConfig {
     }
 
     @Entry public static boolean enabled = true;
+    @Entry public static boolean displayWhenF3 = false;
     @Entry public static Position position = Position.TOP_LEFT;
 }

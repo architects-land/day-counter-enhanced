@@ -5,5 +5,6 @@
   "daycounterenhanced.midnightconfig.enum.Position.TOP_RIGHT": "Top right",
   "daycounterenhanced.midnightconfig.enum.Position.BOTTOM_LEFT": "Bottom left",
   "daycounterenhanced.midnightconfig.enum.Position.BOTTOM_RIGHT": "Bottom right",
-  "daycounterenhanced.midnightconfig.enabled": "Enabled"
+  "daycounterenhanced.midnightconfig.enabled": "Enabled",
+  "daycounterenhanced.midnightconfig.displayWhenF3": "Display when F3 is visible"
 }
